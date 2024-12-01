@@ -4,23 +4,6 @@ import { FaAmbulance, FaHospitalAlt } from "react-icons/fa";
 import { GiPathDistance } from "react-icons/gi";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { DefaultIcon } from '../utils/iconConfig';
-
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconUrl: markerIcon.src,
-    iconRetinaUrl: markerIcon2x.src,
-    shadowUrl: markerShadow.src,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    tooltipAnchor: [16, -28],
-    shadowSize: [41, 41]
-});
 
 const SampleMap = ({ 
   center, 
@@ -33,6 +16,27 @@ const SampleMap = ({
   const [hospitals, setHospitals] = useState([]);
   const [showHospitals, setShowHospitals] = useState(false);
   const [route, setRoute] = useState([]);
+
+  // Custom marker icons
+  const createCustomIcon = (color) => {
+    return L.divIcon({
+      html: `
+        <svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+          <path 
+            fill="${color}"
+            d="M12 0C7.802 0 4 3.403 4 7.602C4 11.8 7.469 16.812 12 24C16.531 16.812 20 11.8 20 7.602C20 3.403 16.199 0 12 0ZM12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8C15 9.657 13.657 11 12 11Z"
+          />
+        </svg>
+      `,
+      className: '',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36]
+    });
+  };
+
+  const userIcon = createCustomIcon('#4A90E2');
+  const hospitalIcon = createCustomIcon('#E53E3E');
 
   const haversineDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -151,13 +155,6 @@ const SampleMap = ({
     return decoded;
   };
 
-  const hospitalIcon = new L.Icon({
-    iconUrl: "https://img.icons8.com/ios/452/hospital-room.png",
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
-
   const handleEmergencyClick = () => {
     setShowHospitals(true);
     fetchNearbyHospitals(userLocation[0], userLocation[1]);
@@ -195,7 +192,7 @@ const SampleMap = ({
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
           />
-          <Marker position={userLocation}>
+          <Marker position={userLocation} icon={userIcon}>
             <Popup>You are here</Popup>
           </Marker>
           {showHospitals &&
@@ -234,3 +231,4 @@ const SampleMap = ({
 };
 
 export default SampleMap;
+
