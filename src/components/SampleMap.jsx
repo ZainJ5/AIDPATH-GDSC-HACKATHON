@@ -6,6 +6,22 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { DefaultIcon } from '../utils/iconConfig';
 
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconUrl: markerIcon.src,
+    iconRetinaUrl: markerIcon2x.src,
+    shadowUrl: markerShadow.src,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    tooltipAnchor: [16, -28],
+    shadowSize: [41, 41]
+});
+
 const SampleMap = ({ 
   center, 
   zoom, 
@@ -91,7 +107,7 @@ const SampleMap = ({
 
   const fetchRouteToHospital = async (lat, lon, hospital) => {
     const routeResponse = await fetch(
-      `http://router.project-osrm.org/route/v1/driving/${lon},${lat};${hospital.lon},${hospital.lat}?overview=full&geometries=polyline
+      `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${hospital.lon},${hospital.lat}?overview=full&geometries=polyline
     `);
     const routeData = await routeResponse.json();
 
