@@ -90,7 +90,7 @@ const SampleMap = ({
 
   const fetchRouteToHospital = async (lat, lon, hospital) => {
     const routeResponse = await fetch(
-      `http://router.project-osrm.org/route/v1/driving/${lon},${lat};${hospital.lon},${hospital.lat}?overview=full&geometries=polyline
+      `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${hospital.lon},${hospital.lat}?overview=full&geometries=polyline
     `);
     const routeData = await routeResponse.json();
 
