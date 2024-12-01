@@ -1,0 +1,17 @@
+[
+    {
+      "type": "ambulance",
+      "services": [
+        { "name": "Edhi", "owner": "Edhi Foundation", "time": 15 },
+        { "name": "1122", "owner": "Punjab Emergency Service", "time": 10 }
+      ]
+    },
+    {
+      "type": "cab",
+      "services": [
+        { "name": "Careem", "owner": "Careem Networks", "time": 5 },
+        { "name": "Uber", "owner": "Uber Technologies", "time": 7 }
+      ]
+    }
+  ]
+  
