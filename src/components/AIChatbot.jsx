@@ -14,97 +14,80 @@ import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
 
 const UrduVirtualKeyboard = ({ onKeyPress, onClose }) => {
   const urduKeyboard = [
-    ['ض', 'ص', 'ث', 'ق', 'ف', 'غ', 'ع', 'ہ', 'خ', 'ح', 'ج', 'د'],
-    ['ش', 'س', 'ی', 'ب', 'ل', 'ا', 'ت', 'ن', 'م', 'ک', 'گ'],
-    ['ظ', 'ط', 'ز', 'ر', 'ذ', 'ڑ', 'و', 'ے', 'ء', 'چ', 'پ', 'ٹ', 'ڈ']
+    ['ا', 'ب', 'پ', 'ت', 'ٹ', 'ث', 'ج', 'چ'],
+    ['ح', 'خ', 'د', 'ڈ', 'ذ', 'ر', 'ڑ', 'ز'],
+    ['س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ'],
+    ['ف', 'ق', 'ک', 'گ', 'ل', 'م', 'ن', 'و'],
+    ['ہ', 'ی', 'ے', 'ء', '،', '۔', '؟', '!']
   ];
 
   return (
-    <div 
-      className="
-        absolute 
-        bottom-20 
-        right-0 
-        w-full
-        max-w-sm
-        p-3 
-        rounded-2xl 
-        z-50 
-        bg-gradient-to-br 
-        from-blue-600 
-        to-indigo-700 
-        shadow-2xl
-        border-2
-        border-blue-500
-        mx-2
-      "
-    >
-      <div className="absolute top-2 right-2">
-        <button 
-          onClick={onClose}
-          className="text-xl font-bold text-white bg-red-500 rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
-        >
-          ×
-        </button>
-      </div>
-      {urduKeyboard.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center flex-wrap gap-1 mb-1">
-          {row.map((key) => (
-            <button
-              key={key}
-              onClick={() => onKeyPress(key)}
-              className="
-                px-2 py-1.5
-                text-sm font-medium
-                rounded-lg
-                transition-all duration-150
-                transform hover:scale-105
-                active:scale-95
-                bg-blue-700 
-                text-white 
-                hover:bg-blue-600 
-                active:bg-blue-800 
-                shadow-md
-              "
-            >
-              {key}
-            </button>
-          ))}
+    <div className="
+      absolute 
+      bottom-full
+      left-0
+      right-0
+      mb-2
+      mx-auto
+      w-[95%]
+      max-w-[400px]
+      p-3
+      rounded-lg
+      bg-gradient-to-br 
+      from-blue-600 
+      to-indigo-700
+      shadow-xl
+      border
+      border-blue-400
+    ">
+      <button 
+        onClick={onClose}
+        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full text-white flex items-center justify-center"
+      >
+        ×
+      </button>
+
+      <div className="grid gap-1">
+        {urduKeyboard.map((row, i) => (
+          <div key={i} className="flex gap-1 justify-center">
+            {row.map(key => (
+              <button
+                key={key}
+                onClick={() => onKeyPress(key)}
+                className="
+                  flex-1
+                  min-w-[1.75rem]
+                  h-8
+                  text-sm
+                  font-medium
+                  rounded
+                  bg-blue-700
+                  hover:bg-blue-600
+                  text-white
+                  shadow-sm
+                  transition-colors
+                "
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+        ))}
+        
+        <div className="flex gap-1 mt-1">
+          <button
+            onClick={() => onKeyPress(' ')}
+            className="flex-[2] h-8 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
+          >
+            Space
+          </button>
+          <button
+            onClick={() => onKeyPress('⌫')}
+            className="flex-1 h-8 rounded bg-red-500 hover:bg-red-600 text-white text-sm"
+          >
+            ⌫
+          </button>
         </div>
-      ))}
-      <div className="flex justify-center gap-2 mt-2">
-        <button
-          onClick={() => onKeyPress(' ')}
-          className="
-            px-4 py-1.5
-            text-sm font-medium
-            rounded-lg
-            flex-grow
-            max-w-xs
-            transition-all duration-150
-            bg-blue-700 
-            text-white 
-            hover:bg-blue-600 
-            shadow-md
-          "
-        >
-          Space
-        </button>
-        <button
-          onClick={() => onKeyPress('⌫')}
-          className="
-            px-4 py-1.5
-            text-sm font-medium
-            rounded-lg
-            transition-all duration-150
-            bg-red-500 
-            text-white 
-            hover:bg-red-600 
-            shadow-md
-          "
-        >
-          ⌫
-        </button>
       </div>
     </div>
   );
@@ -399,10 +382,28 @@ const SYSTEM_PROMPTS = {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="relative bottom-4 right-4 z-50">
       {isOpen && (
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md mb-4 relative overflow-hidden border-2 border-blue-200">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 text-white">
+    <div className="
+    fixed 
+    bottom-16 
+    left-2 
+    right-2 
+    sm:relative 
+    sm:bottom-auto 
+    sm:left-auto 
+    sm:right-auto
+    bg-white 
+    rounded-3xl 
+    shadow-2xl 
+    w-[calc(100%-1rem)] 
+    sm:w-full 
+    sm:max-w-md 
+    mb-4 
+    overflow-hidden 
+    border-2 
+    border-blue-200
+  ">          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 text-white">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
                 <HeartPulse className="w-6 h-6 text-white" />
@@ -420,18 +421,31 @@ const SYSTEM_PROMPTS = {
             </div>
           </div>
 
-          <div className="h-80 sm:h-96 overflow-y-auto p-4 space-y-4 bg-blue-50">
-            {messages.map((msg) => (
+          <div className="
+  h-[60vh] 
+  sm:h-80 
+  overflow-y-auto 
+  p-2 
+  sm:p-4 
+  space-y-3 
+  sm:space-y-4 
+  bg-blue-50
+">            {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}
               >
                 <div
                   className={`
-                    max-w-[80%] 
-                    rounded-2xl 
-                    px-4 
-                    py-3 
+  max-w-[85%] 
+  sm:max-w-[80%] 
+  rounded-2xl 
+  px-3 
+  py-2 
+  sm:px-4 
+  sm:py-3
+  text-sm
+  sm:text-base
                     ${msg.isBot 
                       ? 'bg-white text-gray-800 shadow-md' 
                       : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg'}
@@ -456,15 +470,15 @@ const SYSTEM_PROMPTS = {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 bg-white border-t border-blue-100 relative">
-            {showUrduKeyboard && (
+          <div className="p-2 sm:p-4 bg-white border-t border-blue-100 relative">
+          {showUrduKeyboard && (
               <UrduVirtualKeyboard 
                 onKeyPress={handleUrduKeyPress} 
                 onClose={() => setShowUrduKeyboard(false)}
               />
             )}
-            <div className="flex space-x-2">
-              <button
+  <div className="flex space-x-1 sm:space-x-2">
+  <button
                 onClick={isListening ? stopListening : startListening}
                 className={`p-2 rounded-lg transition-colors ${
                   isListening 
@@ -487,9 +501,13 @@ const SYSTEM_PROMPTS = {
                 placeholder="Type emergency message..."
                 className="
                   flex-1 
-                  rounded-lg 
-                  px-4 
-                  py-2 
+      text-sm
+      sm:text-base
+      rounded-lg 
+      px-2
+      sm:px-4 
+      py-1.5
+      sm:py-2 
                   bg-blue-50 
                   text-gray-800 
                   placeholder-blue-400 
@@ -526,13 +544,20 @@ const SYSTEM_PROMPTS = {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="
-          bg-gradient-to-r 
-          from-blue-600 
-          to-indigo-700 
-          text-white 
-          rounded-full 
-          p-4 
-          shadow-2xl 
+  fixed
+  bottom-4
+  right-2
+  sm:relative
+  sm:bottom-auto
+  sm:right-auto
+  bg-gradient-to-r 
+  from-blue-600 
+  to-indigo-700 
+  text-white 
+  rounded-full 
+  p-3
+  sm:p-4
+  shadow-2xl
           hover:from-blue-700 
           hover:to-indigo-800 
           transition-all 
@@ -548,51 +573,3 @@ const SYSTEM_PROMPTS = {
 };
 
 export default AIChatbot;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
