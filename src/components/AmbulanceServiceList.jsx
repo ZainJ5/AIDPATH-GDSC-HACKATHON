@@ -117,43 +117,65 @@ const AmbulanceServicesList = () => {
           },
         }}
       />
-      {services.length > 0 && (
-        <div className="space-y-6">
-          {services.map((serviceType, index) => (
-            <div key={index}>
-              <h3 className="text-xl font-bold text-gray-700 border-b pb-2 mb-4">
-                {serviceType.type.toUpperCase()}
-              </h3>
-              <div className="space-y-4">
-                {serviceType.services.map((service, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-gray-50 rounded-lg flex justify-between items-center"
-                  >
-                    <div>
-                      <p className="text-lg font-semibold text-gray-800">
-                        {service.name} - <span className="text-gray-600">{service.owner}</span>
-                      </p>
-                      <p className="text-sm text-gray-500">Time: {service.time} minutes</p>
-                    </div>
-                    <button
-                      onClick={() => handleBookService(service)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+      
+      {timer === null ? (
+        // Show services list when no service is selected
+        services.length > 0 && (
+          <div className="space-y-6">
+            {services.map((serviceType, index) => (
+              <div key={index}>
+                <h3 className="text-xl font-bold text-gray-700 border-b pb-2 mb-4">
+                  {serviceType.type.toUpperCase()}
+                </h3>
+                <div className="space-y-4">
+                  {serviceType.services.map((service, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 bg-gray-50 rounded-lg flex justify-between items-center"
                     >
-                      <FaAmbulance />
-                      Book
-                    </button>
-                  </div>
-                ))}
+                      <div>
+                        <p className="text-lg font-semibold text-gray-800">
+                          {service.name} - <span className="text-gray-600">{service.owner}</span>
+                        </p>
+                        <p className="text-sm text-gray-500">Time: {service.time} minutes</p>
+                      </div>
+                      <button
+                        onClick={() => handleBookService(service)}
+                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+                      >
+                        <FaAmbulance />
+                        Book
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
+            ))}
+          </div>
+        )
+      ) : (
+        // Show timer when service is selected
+        <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg">
+          <div className="text-center space-y-4">
+            <FaAmbulance className="mx-auto text-5xl text-green-500" />
+            <h2 className="text-2xl font-bold text-gray-800">Ambulance En Route</h2>
+            <div className="text-4xl font-bold text-green-600">
+              {formatTime(timer)}
             </div>
-          ))}
-        </div>
-      )}
-
-      {timer !== null && timer > 0 && (
-        <div className="text-center text-2xl font-bold text-red-600 bg-gray-50 py-4 rounded-lg mt-6">
-          Service will reach you in: <span className="text-black">{formatTime(timer)}</span>
+            <p className="text-gray-500">Until arrival</p>
+            <button
+              onClick={() => {
+                setTimer(null);
+                setSelectedService(null);
+              }}
+              className="mt-6 bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2 rounded-lg"
+            >
+              Book Another Service
+            </button>
+            <h3 className="text-sm font-medium text-gray-500 mt-4">
+                  Use Chatbot for instant first aid help
+            </h3>
+          </div>
         </div>
       )}
     </div>
@@ -161,5 +183,3 @@ const AmbulanceServicesList = () => {
 };
 
 export default AmbulanceServicesList;
-
-
