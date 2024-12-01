@@ -4,6 +4,8 @@ import { FaAmbulance, FaHospitalAlt } from "react-icons/fa";
 import { GiPathDistance } from "react-icons/gi";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { MapPin } from "lucide-react"; 
+
 
 const SampleMap = ({ 
   center, 
@@ -16,27 +18,6 @@ const SampleMap = ({
   const [hospitals, setHospitals] = useState([]);
   const [showHospitals, setShowHospitals] = useState(false);
   const [route, setRoute] = useState([]);
-
-  // Custom marker icons
-  const createCustomIcon = (color) => {
-    return L.divIcon({
-      html: `
-        <svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            fill="${color}"
-            d="M12 0C7.802 0 4 3.403 4 7.602C4 11.8 7.469 16.812 12 24C16.531 16.812 20 11.8 20 7.602C20 3.403 16.199 0 12 0ZM12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8C15 9.657 13.657 11 12 11Z"
-          />
-        </svg>
-      `,
-      className: '',
-      iconSize: [36, 36],
-      iconAnchor: [18, 36],
-      popupAnchor: [0, -36]
-    });
-  };
-
-  const userIcon = createCustomIcon('#4A90E2');
-  const hospitalIcon = createCustomIcon('#E53E3E');
 
   const haversineDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -51,6 +32,19 @@ const SampleMap = ({
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
+
+  const userIcon = new L.divIcon({
+    className: 'custom-div-icon',
+    html: `<div style="color: #2563eb; background-color: white; border-radius: 50%; padding: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+           </div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+  });
 
   const calculateTime = (distance) => {
     const averageSpeed = 40;
@@ -111,7 +105,7 @@ const SampleMap = ({
 
   const fetchRouteToHospital = async (lat, lon, hospital) => {
     const routeResponse = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${hospital.lon},${hospital.lat}?overview=full&geometries=polyline
+      `http://router.project-osrm.org/route/v1/driving/${lon},${lat};${hospital.lon},${hospital.lat}?overview=full&geometries=polyline
     `);
     const routeData = await routeResponse.json();
 
@@ -155,6 +149,13 @@ const SampleMap = ({
     return decoded;
   };
 
+  const hospitalIcon = new L.Icon({
+    iconUrl: "https://img.icons8.com/ios/452/hospital-room.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  });
+
   const handleEmergencyClick = () => {
     setShowHospitals(true);
     fetchNearbyHospitals(userLocation[0], userLocation[1]);
@@ -193,7 +194,7 @@ const SampleMap = ({
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
           />
           <Marker position={userLocation} icon={userIcon}>
-            <Popup>You are here</Popup>
+          <Popup>You are here</Popup>
           </Marker>
           {showHospitals &&
             hospitals.map((hospital, index) => {
@@ -231,4 +232,3 @@ const SampleMap = ({
 };
 
 export default SampleMap;
-
