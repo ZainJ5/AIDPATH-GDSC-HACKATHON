@@ -4,6 +4,7 @@ import { FaAmbulance, FaHospitalAlt } from "react-icons/fa";
 import { GiPathDistance } from "react-icons/gi";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { DefaultIcon } from '../utils/iconConfig';
 
 const SampleMap = ({ 
   center, 
