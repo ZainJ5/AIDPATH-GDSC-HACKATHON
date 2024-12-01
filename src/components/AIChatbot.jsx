@@ -115,9 +115,6 @@ const AIChatbot = () => {
   const AZURE_SPEECH_KEY = import.meta.env.VITE_AZURE_SPEECH_KEY;
   const AZURE_REGION = "eastus";
 
-  console.log('API Key:', API_KEY);
-  console.log('Azure Speech Key:', AZURE_SPEECH_KEY);
-
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
