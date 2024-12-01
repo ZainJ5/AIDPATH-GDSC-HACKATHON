@@ -22,7 +22,7 @@ const Home = () => {
         <div className="md:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="relative">
             <SampleMap 
-              center={[34.068556, 72.640164]} 
+              center={[34.070, 72.643]} 
               zoom={14} 
               onEmergencyClick={handleEmergencyClick}
               showServiceButton={showServiceButton}
