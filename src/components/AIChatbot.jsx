@@ -246,35 +246,39 @@ const SYSTEM_PROMPTS = {
         role: msg.role,
         content: msg.content
       }));
-
+  
       console.log('Context messages:', contextMessages);
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  
+      const response = await fetch('https://gemini.googleapis.com/v1/chat:generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
+          'Authorization': `Bearer ${API_KEY}`, 
         },
         body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPTS[language] },
-            ...contextMessages,
-            { role: "user", content: userMessage }
-          ],
-          temperature: 0.7,
-          max_tokens: 1000
+          model: "gemini-large", 
+          context: {
+            messages: [
+              { role: "system", content: SYSTEM_PROMPTS[language] },
+              ...contextMessages,
+              { role: "user", content: userMessage }
+            ]
+          },
+          parameters: {
+            temperature: 0.7,
+            maxOutputTokens: 1000
+          }
         })
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      return data.choices[0].message.content;
+      return data.output.message.text; 
     } catch (error) {
-      console.error('Error calling OpenAI API:', error);
+      console.error('Error calling Google Gemini API:', error);
       return "I apologize for the technical difficulty. Please seek immediate help through local emergency services. Your safety is paramount.";
     }
   };
