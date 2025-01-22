@@ -242,24 +242,22 @@ const SYSTEM_PROMPTS = {
 
   const generateOpenAIResponse = async (userMessage, language = 'english') => {
     try {
-      // Using cors-anywhere as an example proxy
-      const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
-      const API_URL = "https://gemini.googleapis.com/v1/chat:generate";
-      
       const contextMessages = messageHistory.slice(-10).map(msg => ({
         role: msg.role,
         content: msg.content
       }));
   
-      const response = await fetch(CORS_PROXY + API_URL, {
+      console.log('Context messages:', contextMessages);
+  
+      const response = await fetch('https://gemini.googleapis.com/v1/chat:generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`,
-          'Origin': window.location.origin
+          'Authorization': `Bearer ${API_KEY}`, 
         },
+        mode: "no-cors",
         body: JSON.stringify({
-          model: "gemini-large",
+          model: "gemini-large", 
           context: {
             messages: [
               { role: "system", content: SYSTEM_PROMPTS[language] },
@@ -279,7 +277,7 @@ const SYSTEM_PROMPTS = {
       }
   
       const data = await response.json();
-      return data.output.message.text;
+      return data.output.message.text; 
     } catch (error) {
       console.error('Error calling Google Gemini API:', error);
       return "I apologize for the technical difficulty. Please seek immediate help through local emergency services. Your safety is paramount.";
