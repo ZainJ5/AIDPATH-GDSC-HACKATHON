@@ -241,74 +241,83 @@ const SYSTEM_PROMPTS = {
   };
 
 const generateOpenAIResponse = async (userMessage, language = 'english') => {
-    if (!API_KEY) {
-      throw new Error('API key is required');
-    }
+  if (!API_KEY) {
+    throw new Error('API key is required');
+  }
 
-    try {
-      const contextMessages = messageHistory.slice(-10).map(msg => msg.content);
-      const systemPrompt = SYSTEM_PROMPTS[language];
+  try {
+    // Prepare the conversation history
+    const conversationHistory = messageHistory.slice(-5).map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }));
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            { role: 'system', parts: [{ text: systemPrompt }] },
-            ...contextMessages.map(content => ({ 
-              role: 'user', 
-              parts: [{ text: content }] 
-            })),
-            { role: 'user', parts: [{ text: userMessage }] }
-          ],
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1000,
+    // Construct the full message array
+    const messageArray = [
+      { role: 'user', parts: [{ text: SYSTEM_PROMPTS[language] }] },
+      ...conversationHistory,
+      { role: 'user', parts: [{ text: userMessage }] }
+    ];
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: messageArray.map(msg => ({
+          role: msg.role,
+          parts: msg.parts
+        })),
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
           },
-        })
-      });
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000,
+        },
+      })
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Extract text from Gemini response
-      const responseText = data.candidates[0]?.content?.parts[0]?.text || 
-        "I apologize, but I cannot provide a response at this moment.";
-
-      return responseText;
-
-    } catch (error) {
-      console.error('Error calling Gemini API:', error);
-      const fallbackMessage = language === 'urdu' 
-        ? "معذرت، تکنیکی مسئلہ۔ برائے مہربانی مقامی ہنگامی خدمات سے فوری مدد لیں۔ آپ کی حفاظت سب سے اہم ہے۔" 
-        : "I apologize for the technical difficulty. Please seek immediate help through local emergency services. Your safety is paramount.";
-      
-      return fallbackMessage;
+    if (!response.ok) {
+      // Log the full error response
+      const errorBody = await response.text();
+      console.error('Detailed error:', errorBody);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
     }
-  };
+
+    const data = await response.json();
+    
+    // Extract text from Gemini response
+    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+      "I apologize, but I cannot provide a response at this moment.";
+
+    return responseText;
+
+  } catch (error) {
+    console.error('Error calling Gemini API:', error);
+    const fallbackMessage = language === 'urdu' 
+      ? "معذرت، تکنیکی مسئلہ۔ برائے مہربانی مقامی ہنگامی خدمات سے فوری مدد لیں۔ آپ کی حفاظت سب سے اہم ہے۔" 
+      : "I apologize for the technical difficulty. Please seek immediate help through local emergency services. Your safety is paramount.";
+    
+    return fallbackMessage;
+  }
+};
 
   const [currentLanguage, setCurrentLanguage] = useState('english');
 
