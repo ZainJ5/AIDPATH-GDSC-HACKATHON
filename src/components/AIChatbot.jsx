@@ -240,47 +240,73 @@ const SYSTEM_PROMPTS = {
     }
   };
 
-  const generateOpenAIResponse = async (userMessage, language = 'english') => {
+const generateOpenAIResponse = async (userMessage, language = 'english') => {
+    if (!API_KEY) {
+      throw new Error('API key is required');
+    }
+
     try {
-      const contextMessages = messageHistory.slice(-10).map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
-  
-      console.log('Context messages:', contextMessages);
-  
-      const response = await fetch('https://gemini.googleapis.com/v1/chat:generate', {
+      const contextMessages = messageHistory.slice(-10).map(msg => msg.content);
+      const systemPrompt = SYSTEM_PROMPTS[language];
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`, 
         },
-        mode: "no-cors",
         body: JSON.stringify({
-          model: "gemini-large", 
-          context: {
-            messages: [
-              { role: "system", content: SYSTEM_PROMPTS[language] },
-              ...contextMessages,
-              { role: "user", content: userMessage }
-            ]
-          },
-          parameters: {
+          contents: [
+            { role: 'system', parts: [{ text: systemPrompt }] },
+            ...contextMessages.map(content => ({ 
+              role: 'user', 
+              parts: [{ text: content }] 
+            })),
+            { role: 'user', parts: [{ text: userMessage }] }
+          ],
+          safetySettings: [
+            {
+              category: "HARM_CATEGORY_HARASSMENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_HATE_SPEECH",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            },
+            {
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            }
+          ],
+          generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 1000
-          }
+            maxOutputTokens: 1000,
+          },
         })
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      return data.output.message.text; 
+      
+      // Extract text from Gemini response
+      const responseText = data.candidates[0]?.content?.parts[0]?.text || 
+        "I apologize, but I cannot provide a response at this moment.";
+
+      return responseText;
+
     } catch (error) {
-      console.error('Error calling Google Gemini API:', error);
-      return "I apologize for the technical difficulty. Please seek immediate help through local emergency services. Your safety is paramount.";
+      console.error('Error calling Gemini API:', error);
+      const fallbackMessage = language === 'urdu' 
+        ? "معذرت، تکنیکی مسئلہ۔ برائے مہربانی مقامی ہنگامی خدمات سے فوری مدد لیں۔ آپ کی حفاظت سب سے اہم ہے۔" 
+        : "I apologize for the technical difficulty. Please seek immediate help through local emergency services. Your safety is paramount.";
+      
+      return fallbackMessage;
     }
   };
 
